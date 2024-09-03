@@ -1,4 +1,5 @@
 use nvml_wrapper::enum_wrappers::device::TemperatureSensor;
+use nvml_wrapper::error::NvmlError;
 use nvml_wrapper::Nvml;
 
 #[derive(Copy, Clone, Debug)]
@@ -22,8 +23,9 @@ impl Sensor {
         }
     }
     
-    pub fn get_value(&self, nvml: &Nvml) -> anyhow::Result<String> {
+    pub fn get_value(&self, nvml: &Nvml) -> Result<String, NvmlError> {
         let device = nvml.device_by_index(self.device_index)?;
+        
         match self.kind {
             SensorKind::Temperature => {
                 let temperature = device.temperature(TemperatureSensor::Gpu)? * 1000;
