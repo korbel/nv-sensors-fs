@@ -1,4 +1,4 @@
-mod nv_sensor_fs;
+mod file_system;
 mod sensors;
 
 use std::fs;
@@ -6,21 +6,22 @@ use anyhow::{bail, Context};
 use clap::Parser;
 use fuser::{mount2, MountOption};
 use is_root::is_root;
-use nv_sensor_fs::NvSensorFs;
+use file_system::NvSensorFs;
 use nvml_wrapper::Nvml;
 use std::path::PathBuf;
 
-/// Creates a read-only FUSE filesystem with direct access to the NVIDIA dGPU sensors
+/// Creates a read-only FUSE file system with direct access to the NVIDIA dGPU sensors
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// The mount point where the filesystem will be mounted to
+    /// The mount point where the file system will be mounted to
     #[arg(short, long, default_value=get_default_mount_point().into_os_string())]
     mount_point: PathBuf,
 }
 
-// TODO create logger and add detailed logs all over the application
 fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
+
     let args = Args::parse();
 
     if !is_root() {
@@ -40,17 +41,17 @@ fn main() -> anyhow::Result<()> {
     let file_system = NvSensorFs::new(&nvml);
     let mount_point = args.mount_point;
     let options = vec![
-        MountOption::FSName("nv-sensors".to_string()),
+        MountOption::FSName("nv-sensors-fs".to_string()),
         MountOption::RO,
         MountOption::AllowOther,
         MountOption::AutoUnmount
     ];
 
-    mount2(file_system, mount_point, &options)?;
+    mount2(file_system, mount_point, &options).context("Failed to mount the file system")?;
 
     Ok(())
 }
 
 fn get_default_mount_point() -> PathBuf {
-    PathBuf::from("/var/lib/nv_sensor_fs")
+    PathBuf::from("/var/lib/nv-sensor-fs")
 }
