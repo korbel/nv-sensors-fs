@@ -75,5 +75,4 @@ $ cat /var/lib/nv-sensor-fs/temp1_input
   - Max temperature
   - Memory stats
   - Labels
-- Handle partial reads
 - Move devices into directories
