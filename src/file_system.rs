@@ -80,19 +80,17 @@ impl<'nvml> NvSensorFs<'nvml> {
             device_nodes.push(device_node_id);
 
             // create sensors
-            self.last_inode_id += 1;
-            let sensor_node_id = self.last_inode_id;
-            let sensor_file = create_sensor_file(
-                sensor_node_id,
-                device_index,
-                SensorKind::Temperature,
-            );
-            self.name_lookup.insert(
-                (device_node_id, sensor_file.name.clone().into()),
-                sensor_node_id,
-            );
-            self.inodes.insert(sensor_node_id, sensor_file);
-            device_sensors.push(sensor_node_id);
+            for sensor in Sensor::create_all(self.nvml, device_index) {
+                self.last_inode_id += 1;
+                let sensor_node_id = self.last_inode_id;
+                let sensor_file = create_sensor_file(sensor_node_id, sensor);
+                self.name_lookup.insert(
+                    (device_node_id, sensor_file.name.clone().into()),
+                    sensor_node_id,
+                );
+                self.inodes.insert(sensor_node_id, sensor_file);
+                device_sensors.push(sensor_node_id);
+            }
 
             // create device
             let device_dir = create_device_dir(device_node_id, device_index, device_sensors);
@@ -279,7 +277,7 @@ impl Filesystem for NvSensorFs<'_> {
                 return;
             };
 
-            trace!("returning file {index}: {:?}", &node.name);
+            trace!("returning file {index}: {:?}", &child_node.name);
             let file_name: OsString = child_node.name.clone().into();
 
             if reply.add(*ino, (index + 1) as i64, FileType::RegularFile, file_name) {
@@ -293,14 +291,42 @@ impl Filesystem for NvSensorFs<'_> {
 }
 
 #[instrument]
-fn create_sensor_file(ino: INodeId, device_index: u32, kind: SensorKind) -> INode {
+fn create_sensor_file(ino: INodeId, sensor: Sensor) -> INode {
     let file_attr = create_file_attr(ino);
 
-    let file_name = match kind {
+    let file_name = match sensor.kind {
+        SensorKind::Bar1MemoryFree => "bar_1_memory_free".to_string(),
+        SensorKind::Bar1MemoryTotal => "bar_1_memory_total".to_string(),
+        SensorKind::Bar1MemoryUsed => "bar_1_memory_used".to_string(),
+        SensorKind::ClockGraphics => "clock_graphics".to_string(),
+        SensorKind::ClockMemory => "clock_memory".to_string(),
+        SensorKind::ClockStreamingMultiprocessor => "clock_streaming_multiprocessor".to_string(),
+        SensorKind::ClockVideo => "clock_video".to_string(),
+        SensorKind::DecoderUtilization => "decoder_utilization".to_string(),
+        SensorKind::DecoderUtilizationSamplingPeriod => {
+            "decoder_utilization_sampling_period".to_string()
+        }
+        SensorKind::EncoderUtilization => "encoder_utilization".to_string(),
+        SensorKind::EncoderUtilizationSamplingPeriod => {
+            "encoder_utilization_sampling_period".to_string()
+        }
+        SensorKind::EnforcedPowerLimit => "enforced_power_limit".to_string(),
+        SensorKind::FanSpeed(idx) => format!("fan_speed_{idx}"),
+        SensorKind::MemoryFree => "memory_free".to_string(),
+        SensorKind::MemoryTotal => "memory_total".to_string(),
+        SensorKind::MemoryUsed => "memory_used".to_string(),
+        SensorKind::Name => "name".to_string(),
+        SensorKind::PcieThroughputReceive => "pcie_throughput_receive".to_string(),
+        SensorKind::PcieThroughputSend => "pcie_throughput_send".to_string(),
+        SensorKind::PerformanceState => "performance_state".to_string(),
+        SensorKind::PowerSource => "power_source".to_string(),
+        SensorKind::PowerUsage => "power_usage".to_string(),
         SensorKind::Temperature => "temperature".to_string(),
+        SensorKind::TemperatureThreshold => "temperature_threshold".to_string(),
+        SensorKind::TotalEnergyConsumption => "total_energy_consumption".to_string(),
+        SensorKind::UtilizationRateGpu => "utilization_rate_gpu".to_string(),
+        SensorKind::UtilizationRateMemory => "utilization_rate_memory".to_string(),
     };
-
-    let sensor = Sensor::new(device_index, kind);
 
     debug!("file created: {file_name}");
     INode {
