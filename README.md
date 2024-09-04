@@ -76,3 +76,4 @@ $ cat /var/lib/nv-sensor-fs/temp1_input
   - Memory stats
   - Labels
 - Handle partial reads
+- Move devices into directories
