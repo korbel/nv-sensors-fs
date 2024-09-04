@@ -69,10 +69,10 @@ $ cat /var/lib/nv-sensor-fs/temp1_input
 - Add github workflow to build and test
 - Add systemd service
 - Create rpm and deb packages
+- Add test coverage
 - Add new sensor types, including:
   - Power usage
   - Fan speed
   - Max temperature
   - Memory stats
   - Labels
-- Move devices into directories
