@@ -295,9 +295,9 @@ fn create_sensor_file(ino: INodeId, sensor: Sensor) -> INode {
     let file_attr = create_file_attr(ino);
 
     let file_name = match sensor.kind {
-        SensorKind::Bar1MemoryFree => "bar_1_memory_free".to_string(),
-        SensorKind::Bar1MemoryTotal => "bar_1_memory_total".to_string(),
-        SensorKind::Bar1MemoryUsed => "bar_1_memory_used".to_string(),
+        SensorKind::Bar1MemoryFree => "bar1_memory_free".to_string(),
+        SensorKind::Bar1MemoryTotal => "bar1_memory_total".to_string(),
+        SensorKind::Bar1MemoryUsed => "bar1_memory_used".to_string(),
         SensorKind::ClockGraphics => "clock_graphics".to_string(),
         SensorKind::ClockMemory => "clock_memory".to_string(),
         SensorKind::ClockStreamingMultiprocessor => "clock_streaming_multiprocessor".to_string(),

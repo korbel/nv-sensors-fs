@@ -61,9 +61,9 @@ Options:
 
 ```shell
 $ find /var/lib/nv-sensor-fs/0/ -type f | xargs -n1 sh -c 'echo $0 - `cat $0`'
-/var/lib/nv-sensor-fs/0/bar_1_memory_free - 263913472
-/var/lib/nv-sensor-fs/0/bar_1_memory_total - 268435456
-/var/lib/nv-sensor-fs/0/bar_1_memory_used - 4521984
+/var/lib/nv-sensor-fs/0/bar1_memory_free - 263913472
+/var/lib/nv-sensor-fs/0/bar1_memory_total - 268435456
+/var/lib/nv-sensor-fs/0/bar1_memory_used - 4521984
 /var/lib/nv-sensor-fs/0/clock_graphics - 300
 /var/lib/nv-sensor-fs/0/clock_memory - 405
 /var/lib/nv-sensor-fs/0/clock_streaming_multiprocessor - 300
