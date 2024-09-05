@@ -1,0 +1,10 @@
+[Unit]
+Description=FUSE file system to expose NVIDIA sensor information
+After=systemd-modules-load.service
+
+[Service]
+ExecStart=/usr/sbin/nv-sensors-fs
+Environment=RUST_LOG=off
+
+[Install]
+WantedBy=multi-user.target

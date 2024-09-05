@@ -6,8 +6,11 @@ Creates a read-only FUSE file system with direct access to the NVIDIA dGPU senso
 
 ## Requirements
 
-- Install fuse3 (most systems have it already installed)
 - Proprietary or the open kernel module NVIDIA driver must be loaded.
+- Enable the service after install to start it automatically:
+  ```shell
+    sudo systemctl enable --now nv-sensors-fs.service
+  ```
 
 ## Development
 
@@ -18,19 +21,38 @@ You will need the rust toolchain to have installed. If you are new to Rust, foll
 #### Fedora
 
 ```shell
-sudo dnf install fuse3 fuse3-devel pkgconfig
+sudo dnf install fuse3 fuse3-devel pkgconfig gcc
 ```
 
 #### Ubuntu/Debian
 
 ```shell
-sudo apt-get install fuse3 libfuse3-dev pkg-config
+sudo apt-get install fuse3 libfuse3-dev pkg-config build-essential
 ```
 
 ### Build
 
 ```shell
 cargo build --release
+```
+
+### Package
+
+#### rpm
+
+```shell
+cargo install cargo-generate-rpm
+cargo build --release
+strip -s target/release/nv-sensors-fs
+cargo generate-rpm
+```
+
+#### deb
+
+```shell
+cargo install cargo-deb
+cargo build --release
+cargo deb
 ```
 
 ### Debug logs
@@ -92,6 +114,4 @@ $ find /var/lib/nv-sensor-fs/0/ -type f | xargs -n1 sh -c 'echo $0 - `cat $0`'
 ## TODO
 
 - Add github workflow to build and test
-- Add systemd service
-- Create rpm and deb packages
 - Add test coverage
