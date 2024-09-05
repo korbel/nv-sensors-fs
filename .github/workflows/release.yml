@@ -1,0 +1,90 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag'
+        required: true
+        type: string
+      commit:
+        description: 'Commit reference. It can be branch name or a commit hash. This will be used to create the tag if it does not exist.'
+        default: 'main'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Determine version
+        env:
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          VERSION=$(cargo metadata --format-version 1 --no-deps --quiet | jq -r '.packages[0].version')
+          echo "Version: $VERSION"
+          if [ "$TAG" != "v$VERSION" ]; then
+            echo "Version tag ($tag) does not match Cargo.toml (v$VERSION)!" >&2
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - uses: ncipollo/release-action@v1.13.0
+        with:
+          tag: ${{ inputs.tag }}
+          commit: ${{ inputs.commit }}
+          generateReleaseNotes: 'true'
+          draft: 'true'
+    outputs:
+      version: ${{ env.VERSION }}
+
+  build:
+    needs: ['create-release']
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: 1
+      VERSION: ${{ needs.create-release.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          components: cargo-deb,cargo-generate-rpm
+
+      - name: Install dependencies
+        run: sudo apt-get install -y fuse3 libfuse3-dev
+
+      - name: Build
+        run: |
+          cargo build --verbose --release
+          strip -s target/release/nv-sensors-fs
+
+      - name: Create RPM package
+        run: cargo generate-rpm
+
+      - name: Create deb package
+        run: cargo deb
+
+      - name: Calculate checksums
+        shell: bash
+        run: |
+          mkdir output
+          cp target/release/nv-sensors-fs output/
+          cp target/generate-rpm/*.rpm output/
+          cp target/debian/*.deb output/
+          find output/ -type f | xargs -n1 bash -c 'shasum -a 256 $0 > $0.sha256'
+
+      - name: Upload files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: find output/ -type f -exec gh release upload "${{ inputs.tag }}" +
