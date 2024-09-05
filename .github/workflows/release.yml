@@ -90,4 +90,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
-        run: find output/ -type f -exec gh release upload "${{ inputs.tag }}" +
+        run: find output/ -type f -exec gh release upload "${{ inputs.tag }}" {} +
