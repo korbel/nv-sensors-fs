@@ -4,7 +4,7 @@ description = "FUSE file system to expose NVIDIA sensor information"
 authors = ["Sandor Korbel <korbel@users.noreply.github.com>"]
 version = "0.1.0"
 license = "GPL-3"
-repository = "https://github.com/korbel/nv-sensor-fs"
+repository = "https://github.com/korbel/nv-sensors-fs"
 edition = "2021"
 
 [dependencies]
