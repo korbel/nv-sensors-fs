@@ -139,7 +139,7 @@ impl Filesystem for NvSensorFs<'_> {
         };
 
         let Some(node) = self.inodes.get(ino) else {
-            error!("file could not be found for ino {ino} - this is likely a bug");
+            error!("file could not be found for ino {ino}");
             reply.error(ENOENT);
             return;
         };
@@ -169,7 +169,7 @@ impl Filesystem for NvSensorFs<'_> {
         };
 
         let INodeKind::SensorFile(sensor) = node.kind else {
-            error!("trying to open a file that's not of a sensor type - this is likely a bug");
+            error!("trying to open a file that's not of a sensor type");
             reply.error(ENOENT);
             return;
         };
@@ -265,14 +265,14 @@ impl Filesystem for NvSensorFs<'_> {
         };
 
         let INodeKind::Directory(children) = &node.kind else {
-            error!("is not a directory - likely a bug");
+            error!("is not a directory");
             reply.error(ENOENT);
             return;
         };
 
         for (index, ino) in children.iter().enumerate().skip(offset as usize) {
             let Some(child_node) = self.inodes.get(ino) else {
-                error!("unknown child node {ino} - this is likely a bug");
+                error!("unknown child node {ino} ");
                 reply.error(ENOENT);
                 return;
             };

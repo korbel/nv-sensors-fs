@@ -1,6 +1,10 @@
 [package]
 name = "nv-sensors-fs"
+description = "FUSE file system to expose NVIDIA sensor information"
+authors = ["Sandor Korbel <korbel@users.noreply.github.com>"]
 version = "0.1.0"
+license = "GPL-3"
+repository = "https://github.com/korbel/nv-sensor-fs"
 edition = "2021"
 
 [dependencies]
@@ -12,3 +16,25 @@ libc = "0.2.158"
 nvml-wrapper = "0.10.0"
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+
+[package.metadata.deb]
+maintainer-scripts = "assets/deb"
+systemd-units = { unit-scripts = "assets/systemd" }
+assets = [
+    ["target/release/nv-sensors-fs", "/usr/sbin/", "755"],
+]
+
+[package.metadata.generate-rpm]
+assets = [
+    { source = "target/release/nv-sensors-fs", dest = "/usr/sbin/", mode = "755" },
+    { source = "assets/systemd/nv-sensors-fs.service", dest = "/lib/systemd/system/nv-sensors-fs.service", mode = "644" },
+]
+post_install_script_flags = 0b001
+post_install_script = "%systemd_post nv-sensors-fs.service"
+pre_uninstall_script_flags = 0b001
+pre_uninstall_script = "%systemd_preun nv-sensors-fs.service"
+post_uninstall_script_flags = 0b001
+post_uninstall_script = "%systemd_postun nv-sensors-fs.service"
+
+
+
