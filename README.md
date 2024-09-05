@@ -61,7 +61,7 @@ Run the service with the `RUST_LOG=trace` environment variable set.
 
 ```shell
 export RUST_LOG=trace
-sudo --preserve-env=RUST_LOG ./nv-sensors-fs
+sudo --preserve-env=RUST_LOG nv-sensors-fs
 ```
 
 ## Options
