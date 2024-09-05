@@ -53,5 +53,5 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn get_default_mount_point() -> PathBuf {
-    PathBuf::from("/var/lib/nv-sensor-fs")
+    PathBuf::from("/var/lib/nv-sensors-fs")
 }
