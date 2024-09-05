@@ -1,6 +1,7 @@
 [Unit]
 Description=FUSE file system to expose NVIDIA sensor information
 After=systemd-modules-load.service
+Before=nbfc_service.service
 
 [Service]
 ExecStart=/usr/sbin/nv-sensors-fs

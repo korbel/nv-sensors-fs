@@ -1,13 +1,13 @@
 mod file_system;
 mod sensors;
 
-use std::fs;
 use anyhow::{bail, Context};
 use clap::Parser;
+use file_system::NvSensorFs;
 use fuser::{mount2, MountOption};
 use is_root::is_root;
-use file_system::NvSensorFs;
 use nvml_wrapper::Nvml;
+use std::fs;
 use std::path::PathBuf;
 
 /// Creates a read-only FUSE file system with direct access to the NVIDIA dGPU sensors
@@ -44,7 +44,7 @@ fn main() -> anyhow::Result<()> {
         MountOption::FSName("nv-sensors-fs".to_string()),
         MountOption::RO,
         MountOption::AllowOther,
-        MountOption::AutoUnmount
+        MountOption::AutoUnmount,
     ];
 
     mount2(file_system, mount_point, &options).context("Failed to mount the file system")?;
