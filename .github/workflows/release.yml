@@ -35,7 +35,7 @@ jobs:
             exit 1
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-      - uses: ncipollo/release-action@v1.13.0
+      - uses: ncipollo/release-action@v1
         with:
           tag: ${{ inputs.tag }}
           commit: ${{ inputs.commit }}
@@ -58,7 +58,6 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
-          components: cargo-deb,cargo-generate-rpm
 
       - name: Install dependencies
         run: sudo apt-get install -y fuse3 libfuse3-dev
@@ -69,10 +68,14 @@ jobs:
           strip -s target/release/nv-sensors-fs
 
       - name: Create RPM package
-        run: cargo generate-rpm
+        run: |
+          cargo install cargo-generate-rpm
+          cargo generate-rpm
 
       - name: Create deb package
-        run: cargo deb
+        run: |
+          cargo install cargo-deb
+          cargo deb
 
       - name: Calculate checksums
         shell: bash
