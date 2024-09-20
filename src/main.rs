@@ -5,7 +5,6 @@ use anyhow::{bail, Context};
 use clap::Parser;
 use file_system::NvSensorFs;
 use fuser::{mount2, MountOption};
-use is_root::is_root;
 use nvml_wrapper::Nvml;
 use std::fs;
 use std::path::PathBuf;
@@ -24,7 +23,7 @@ fn main() -> anyhow::Result<()> {
 
     let args = Args::parse();
 
-    if !is_root() {
+    if !nix::unistd::Uid::effective().is_root() {
         bail!("This command has to be run with superuser privileges.");
     }
 
