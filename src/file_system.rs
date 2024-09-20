@@ -226,7 +226,7 @@ impl Filesystem for NvSensorFs<'_> {
         let end_offset = min(start_offset + size as usize, content.len());
 
         trace!("returning value from offset {start_offset} to {end_offset}");
-        reply.data(&content[offset as usize..]);
+        reply.data(&content[start_offset..end_offset]);
     }
 
     #[instrument(skip(self, _req, reply))]
