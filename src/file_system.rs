@@ -42,7 +42,7 @@ enum INodeKind {
 }
 
 impl<'nvml> NvSensorFs<'nvml> {
-    pub fn new(nvml: &'nvml Nvml) -> NvSensorFs {
+    pub fn new(nvml: &'nvml Nvml) -> NvSensorFs<'nvml> {
         NvSensorFs {
             nvml,
             last_inode_id: FUSE_ROOT_ID,
