@@ -1,7 +1,8 @@
 [Unit]
 Description=FUSE file system to expose NVIDIA sensor information
-After=systemd-modules-load.service
+After=systemd-modules-load.service akmods.service
 Before=nbfc_service.service
+ConditionPathExists=/sys/module/nvidia
 
 [Service]
 ExecStart=/usr/sbin/nv-sensors-fs
