@@ -1,3 +1,5 @@
+**Archived! This project was primarily made as a workaround for the lack of nvidia support in the [nbfc_linux](https://github.com/nbfc-linux/nbfc-linux) project, but the support for nvidia got implemented as of today. I do not recommend using FUSE for interprocess communication for any reason, for anyone. It is a bad idea. I consider this project obsolate now, but feel free to fork it or take a look.**
+
 # nv-sensors-fs
 
 Creates a read-only FUSE file system with direct access to the NVIDIA dGPU sensors.
